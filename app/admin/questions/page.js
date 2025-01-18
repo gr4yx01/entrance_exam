@@ -13,7 +13,7 @@ const page = () => {
         </div>
       <div className='gap-2 flex flex-col'>
         <TextField label={'Question'} />
-        <span>Add Options</span>
+        <span className='py-2 text-center'>Add Options</span>
         <TextField label={'Option A'} />
         <TextField label={'Option B'} />
         <TextField label={'Option C'} />

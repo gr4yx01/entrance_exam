@@ -1,11 +1,13 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { useNavigation } from '../store/navigation';
 import React, { useState } from 'react';
 
 const UserNav = () => {
   const [selected, setSelected] = useState('exams');
   const setNavigation =  useNavigation((state) => state.setNavigation)
+  const router = useRouter()
 
   // Navigation items
   const navItems = [
@@ -14,6 +16,7 @@ const UserNav = () => {
   ];
 
   const handleNavigation = (id) => {
+    router.push('/admin')
     setSelected(id);
     setNavigation(id)
   }
