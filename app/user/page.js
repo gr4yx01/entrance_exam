@@ -10,7 +10,6 @@ import {
     CardTitle,
 } from "@/components/ui/card"
 
-import { Trash2 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 
 const page = () => {

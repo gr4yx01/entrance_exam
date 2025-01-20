@@ -1,11 +1,45 @@
 'use client';
+import { axiosInstance } from '@/app/layout';
 import Button from '@/components/Button';
 import TextField from '@/components/TextField';
 import { Landmark } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+import { useCookies } from 'react-cookie';
+import { toast } from 'react-toastify';
 
 export default function page() {
     const router = useRouter()
+    const [loading, setLoading] = useState(false)
+    const [_, setCookie] = useCookies(['access_token', 'role'])
+    const [detail, setDetail] = useState({
+      username: '',
+      password: '',
+      email: '',
+      school: '',
+      age: 0,
+    })
+
+    const handleSubmit = async () => {
+      try {
+          setLoading(true)
+          const response = await axiosInstance.post('/auths/register', detail)
+
+          setCookie('access_token', response.data.access_token, {
+              path: '/'
+          })
+          setCookie('role', 'STUDENT' , {
+              path: '/'
+          })
+
+          toast.success('Account created successfully')
+          router.push('/user')
+          setLoading(false)
+      } catch (error) {
+          toast.error(error?.response?.data?.message)
+          setLoading(false)
+      }
+  }
 
   return (
     <div className="flex h-screen">
@@ -24,15 +58,30 @@ export default function page() {
           <span className='font-semibold text-gray-400 text-sm'>Ensure you use a valid email address as it would be used to verify your account</span>
         </div>
         <div className='mt-5 flex gap-5 w-full'>
-          <TextField label='Username' />
-          <TextField label='Email' />
+          <TextField handleChange={(e) => setDetail({
+            ...detail,
+            username: e.target.value
+          })} label='Username' />
+          <TextField handleChange={(e) => setDetail({
+            ...detail,
+            email: e.target.value
+          })} label='Email' />
         </div>
         <div className='mt-5 flex gap-5 w-full'>
-          <TextField label='School' />
-          <TextField label='Age' />
+          <TextField handleChange={(e) => setDetail({
+            ...detail,
+            school: e.target.value
+          })} label='School' />
+          <TextField handleChange={(e) => setDetail({
+            ...detail,
+            age: Number(e.target.value)
+          })} label='Age' />
         </div>
-          <TextField label='Password' type='password' secureTextEntry />
-        <Button label='Create Account' />
+          <TextField handleChange={(e) => setDetail({
+            ...detail,
+            password: e.target.value
+          })} label='Password' type='password' secureTextEntry />
+        <Button handleClick={handleSubmit} label='Create Account' loading={loading}/> 
         <div className='w-full flex justify-end items-center'>
           <button onClick={() => router.push('/')} className='font-semibold text-sm text-green-500'>Login to account</button>
         </div>

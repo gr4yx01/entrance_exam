@@ -1,3 +1,5 @@
+'use client'
+
 import React from 'react'
 import {
     DropdownMenu,
@@ -11,6 +13,13 @@ import { UserIcon } from 'lucide-react'
   
 
 const Header = () => {
+
+  const handleLogOut = () => {
+    document.cookie = "access_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;"
+    document.cookie = "role=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;"
+    router.push('/')
+  }
+
   return (
     <div className='flex justify-between items-center p-5 border-b shadow-xs'>
       <span className='font-semibold text-2xl w-2/5'>NCEE</span>
@@ -24,7 +33,9 @@ const Header = () => {
           <DropdownMenuContent>
             <DropdownMenuLabel>My Account</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>Log out</DropdownMenuItem>
+            <DropdownMenuItem onClick={handleLogOut}>
+              Log out
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>

@@ -1,11 +1,40 @@
 'use client';
+
+import { axiosInstance } from '@/app/layout';
 import Button from '@/components/Button';
 import TextField from '@/components/TextField';
 import { Landmark } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+import { useCookies } from 'react-cookie';
+import { toast } from 'react-toastify';
 
 export default function page() {
   const router = useRouter()
+  const [_, setCookie] = useCookies(['access_token', 'role'])
+  const [detail, setDetail] = useState({
+    email: '',
+    password: ''
+  })
+
+  const handleSubmit = async () => {
+    try {
+      const response = await axiosInstance.post('/auths/login/admin', detail)
+
+      setCookie('access_token', response?.data?.access_token, {
+        path: '/'
+      })
+
+      setCookie('role', 'ADMIN', {
+        path: '/'
+      })
+
+      router.push('/admin')
+      toast.success('Login successful')
+    } catch (err)  {
+      toast.error('Error logging in')
+    }
+  }
   
   return (
     <div className="flex h-screen">
@@ -25,12 +54,17 @@ export default function page() {
           <span className='font-semibold text-gray-400 text-sm'>Login with your email & password</span>
         </div>
         <div className='mt-5 flex flex-col gap-5 w-full'>
-          <TextField label='Username' />
-          <TextField label='Password' type='password' secureTextEntry />
+          <TextField handleChange={(e) => setDetail({
+            ...detail,
+            email: e.target.value
+          })} label='Email' />
+          <TextField handleChange={(e) => setDetail({
+            ...detail,
+            password: e.target.value
+          })} label='Password' type='password' secureTextEntry />
         </div>
-        <Button label='Login to account' />
+        <Button handleClick={handleSubmit} label='Login to account' />
         <div className='w-full flex justify-end items-center'>
-        {/* <button onClick={() => router.push('/auth/register')} className='font-semibold text-sm text-green-500'>Create Account</button> */}
         </div>
       </div>
     </div>

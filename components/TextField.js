@@ -3,7 +3,7 @@
 import { EyeClosedIcon, EyeIcon } from 'lucide-react';
 import { useState } from 'react';
 
-const TextField = ({ label, placeholder, type = 'text' }) => {
+const TextField = ({ label, placeholder, type = 'text', handleChange, value }) => {
   const [visible, setVisible] = useState(false);
 
   // Determine the input type based on visibility and the provided type
@@ -21,6 +21,8 @@ const TextField = ({ label, placeholder, type = 'text' }) => {
           placeholder={placeholder}
           type={inputType}
           className="outline-none w-full"
+          onChange={handleChange}
+          value={value}
         />
 
         {/* Toggle Password Visibility Icon */}

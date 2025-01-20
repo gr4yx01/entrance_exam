@@ -1,11 +1,43 @@
 'use client';
+
+import { useState } from 'react';
 import Button from '../components/Button';
 import TextField from '../components/TextField';
 import { Landmark } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { toast } from 'react-toastify';
+import { axiosInstance } from './layout';
+import { useCookies } from 'react-cookie';
 
 export default function Home() {
   const router = useRouter()
+  const [loading, setLoading] = useState(false)
+  const [_, setCookie] = useCookies(['access_token', 'role'])
+  const [detail, setDetail] = useState({
+    email: '',
+    password: ''
+  })
+
+  const handleSubmit = async () => {
+    try {
+      setLoading(true)
+      const response = await axiosInstance.post('/auths/login', detail)
+
+      setCookie('access_token', response?.data?.access_token, {
+        path: '/'
+      })
+
+      setCookie('role', 'STUDENT', {
+        path: '/'
+      })
+
+      router.push('/user')
+      toast.success('Login successful')
+      setLoading(false)
+    } catch (err) {
+      toast.error('Error Logging in')
+    }
+  }
 
   return (
     <div className="flex h-screen">
@@ -29,10 +61,16 @@ export default function Home() {
           <span className='font-semibold text-gray-400 text-sm'>Login with your email & password</span>
         </div>
         <div className='mt-5 flex flex-col gap-5 w-full'>
-          <TextField label='Username' />
-          <TextField label='Password' type='password' secureTextEntry />
+          <TextField handleChange={(e) => setDetail({
+            ...detail,
+            email: e.target.value
+          })} label='Email' />
+          <TextField handleChange={(e) => setDetail({
+            ...detail,
+            password: e.target.value
+          })} label='Password' type='password' secureTextEntry />
         </div>
-        <Button label='Login to account' />
+        <Button loading={loading} handleClick={handleSubmit} label='Login to account' />
         <div className='w-full flex justify-end items-center'>
         <button onClick={() => router.push('/auth/register')} className='font-semibold text-sm text-green-500'>Create Account</button>
         </div>
