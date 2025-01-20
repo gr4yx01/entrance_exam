@@ -6,7 +6,7 @@ import { useNavigation } from '../../store/navigation'
 import React from 'react'
 
 const page = () => {
-    const current = useNavigation((state) => state.current)
+  const current = useNavigation((state) => state.current)
 
   return (
     <div>

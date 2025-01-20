@@ -12,6 +12,7 @@ import { toast } from 'react-toastify';
 export default function page() {
   const router = useRouter()
   const [_, setCookie] = useCookies(['access_token', 'role'])
+  const [loading, setLoading] = useState(false)
   const [detail, setDetail] = useState({
     email: '',
     password: ''
@@ -19,6 +20,7 @@ export default function page() {
 
   const handleSubmit = async () => {
     try {
+      setLoading(true)
       const response = await axiosInstance.post('/auths/login/admin', detail)
 
       setCookie('access_token', response?.data?.access_token, {
@@ -30,6 +32,7 @@ export default function page() {
       })
 
       router.push('/admin')
+      setLoading(false)
       toast.success('Login successful')
     } catch (err)  {
       toast.error('Error logging in')
@@ -63,7 +66,7 @@ export default function page() {
             password: e.target.value
           })} label='Password' type='password' secureTextEntry />
         </div>
-        <Button handleClick={handleSubmit} label='Login to account' />
+        <Button handleClick={handleSubmit} loading={loading} label='Login to account' />
         <div className='w-full flex justify-end items-center'>
         </div>
       </div>
