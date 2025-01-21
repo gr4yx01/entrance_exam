@@ -14,7 +14,7 @@ export default function page() {
   const [_, setCookie] = useCookies(['access_token', 'role'])
   const [loading, setLoading] = useState(false)
   const [detail, setDetail] = useState({
-    email: '',
+    username: '',
     password: ''
   })
 
@@ -59,8 +59,8 @@ export default function page() {
         <div className='mt-5 flex flex-col gap-5 w-full'>
           <TextField handleChange={(e) => setDetail({
             ...detail,
-            email: e.target.value
-          })} label='Email' />
+            username: e.target.value
+          })} label='Username' />
           <TextField handleChange={(e) => setDetail({
             ...detail,
             password: e.target.value

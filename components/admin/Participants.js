@@ -8,8 +8,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import useSWR from 'swr'
 
 const Participants = () => {
+  const { data } = useSWR('/exams/students')
+
+  console.log(data)
+
   return (
     <div className='gap-5'>
       <span className="text-2xl font-semibold">Participants</span>
@@ -22,17 +27,21 @@ const Participants = () => {
       <TableHead>Name</TableHead>
       <TableHead>School</TableHead>
       <TableHead>Age</TableHead>
-      <TableHead className="text-right">Score</TableHead>
+      <TableHead>Candidate Number</TableHead>
     </TableRow>
   </TableHeader>
   <TableBody>
-    <TableRow>
-      <TableCell className="font-medium">1</TableCell>
-      <TableCell>Henry Nnamani</TableCell>
-      <TableCell>Greenwich International</TableCell>
-      <TableCell>18</TableCell>
-      <TableCell className="text-right">30</TableCell>
-    </TableRow>
+    {
+      data?.data?.map((participant, index) => (
+        <TableRow key={participant?.id}>
+          <TableCell className="font-medium">{index + 1}</TableCell>
+          <TableCell>{participant?.username}</TableCell>
+          <TableCell>{participant?.school}</TableCell>
+          <TableCell>{participant?.age}</TableCell>
+          <TableCell>{new Date().getFullYear() + '-' + participant?.id?.slice(-5)}</TableCell>
+        </TableRow>
+      ))
+    }
   </TableBody>
 </Table>
       </div>

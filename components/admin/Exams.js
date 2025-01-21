@@ -16,6 +16,7 @@ import useSWR from 'swr'
 import useExamStore from '@/store/exam'
 import { toast } from 'react-toastify'
 import { axiosInstance } from '@/app/layout'
+import Button from '../Button'
 
 const Exams = () => {
   const router = useRouter()
@@ -26,6 +27,8 @@ const Exams = () => {
     setSelectedExam(exam)
     router.push('/admin/questions')
   }
+
+  console.log(data)
 
   const deleteExam = async (id) => {
     try {
@@ -45,7 +48,7 @@ const Exams = () => {
         <div className='grid grid-cols-3 gap-8 p-5'>
           {
             data?.map((exam) => (
-              <Card>
+              <Card key={exam?.id}>
                 <CardHeader>
                   <CardTitle className='flex justify-between items-center pb-3'>
                     <span>{exam?.name}</span>
@@ -60,7 +63,7 @@ const Exams = () => {
                   </div>
                 </CardContent>
                 <CardFooter>
-                <button disabled={exam?.question?.length === exam?.noOfQuestions} onClick={() => addQuestion(exam)} className='bg-green-500 w-full p-2 text-white font-semibold rounded-lg'>Add Question</button>
+                <Button disabled={exam?.questions?.length === exam?.noOfQuestions} handleClick={() => addQuestion(exam)} label={'Add Question'} />
                 </CardFooter>
               </Card>
             ))

@@ -1,5 +1,8 @@
-import React from 'react';
+'use client'
+
+import React, { useEffect, useState } from 'react';
 import { Medal, Award, BookOpen, GraduationCap, ArrowRight, Download } from 'lucide-react';
+import useSWR from 'swr';
 
 function page() {
   // Sample data - in a real page this would come from your backend
@@ -17,6 +20,26 @@ function page() {
       { name: "Social Studies", score: 85, grade: "B+", status: "Good" }
     ]
   };
+  const { data: result } = useSWR('/exams/result')
+  const { data: profile } = useSWR('/auths/me')
+  const { data: exams } = useSWR('/exams')
+  const [score, setScore] = useState(0)
+
+  const computeTotalScore = (data) => {
+    let score = 0;
+    data?.map((exam) => {
+      score += (exam?.score / exam?.exam?.noOfQuestions) * 100
+    })
+    
+    return (score * data?.length) / exams?.length
+  }
+
+  const computeSubjectPercentage = (exam) => {
+    return (exam?.score / exam?.exam?.noOfQuestions) * 100
+  }
+
+  console.log(result)
+
 
   return (
     <div className="min-h-screen">
@@ -43,16 +66,17 @@ function page() {
             <div>
               <h2 className="text-xl font-semibold text-gray-900 mb-4">Student Information</h2>
               <div className="space-y-3">
-                <p className="text-gray-600">Name: <span className="font-medium text-gray-900">{studentResults.name}</span></p>
-                <p className="text-gray-600">Candidate Number: <span className="font-medium text-gray-900">{studentResults.candidateNumber}</span></p>
-                <p className="text-gray-600">Exam Date: <span className="font-medium text-gray-900">{studentResults.examDate}</span></p>
+                <p className="text-gray-600">Name: <span className="font-medium text-gray-900">{profile?.data?.username}</span></p>
+                <p className="text-gray-600">Email: <span className="font-medium text-gray-900">{profile?.data?.email}</span></p>
+                <p className="text-gray-600">Candidate Number: <span className="font-medium text-gray-900">{new Date().getFullYear() + '-' + profile?.data?.id?.slice(-5)}</span></p>
+                {/* <p className="text-gray-600">Exam Date: <span className="font-medium text-gray-900">{moment(profile?.data?.createdAt).format('MMMM DD, YYYY')}</span></p> */}
               </div>
             </div>
             <div className="flex flex-col justify-center items-center bg-green-100 rounded-lg p-6">
               <Medal className="h-12 w-12 text-blue-600 mb-3" />
-              <p className="text-sm text-gray-600">Overall Rank</p>
-              <p className="text-3xl font-bold text-blue-600">{studentResults.rank}<span className="text-lg font-normal text-gray-600">/{studentResults.totalCandidates}</span></p>
-              <p className="text-sm text-gray-600 mt-2">Total Score: {studentResults.totalScore}%</p>
+              {/* <p className="text-sm text-gray-600">Overall Rank</p> */}
+              <p className="text-sm text-gray-600 mt-2">Total Score</p>
+              <p className="text-3xl font-bold text-blue-600">{computeTotalScore(result?.data)}%</p>
             </div>
           </div>
         </div>
@@ -74,7 +98,76 @@ function page() {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {studentResults.subjects.map((subject, index) => (
+                {
+                  result?.data?.map((exam) => {
+                    const percentage = computeSubjectPercentage(exam);
+    
+                    // Function to determine grade and description
+                    const getGradeDetails = (percentageScore) => {
+                      switch (true) {
+                        case percentageScore >= 70:
+                          return {
+                            grade: "A",
+                            description: "Excellent",
+                            gradeBg: "bg-green-100",
+                            gradeText: "text-green-800",
+                          };
+                        case percentageScore >= 60:
+                          return {
+                            grade: "B",
+                            description: "Very Good",
+                            gradeBg: "bg-blue-100",
+                            gradeText: "text-blue-800",
+                          };
+                        case percentageScore >= 50:
+                          return {
+                            grade: "C",
+                            description: "Good",
+                            gradeBg: "bg-yellow-100",
+                            gradeText: "text-yellow-800",
+                          };
+                        case percentageScore >= 40:
+                          return {
+                            grade: "D",
+                            description: "Pass",
+                            gradeBg: "bg-orange-100",
+                            gradeText: "text-orange-800",
+                          };
+                        default:
+                          return {
+                            grade: "F",
+                            description: "Fail",
+                            gradeBg: "bg-red-100",
+                            gradeText: "text-red-800",
+                          };
+                      }
+                    };
+                
+                    const { grade, description, gradeBg, gradeText } = getGradeDetails(percentage);
+                
+                    return (
+                      <tr key={exam?.id}>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                          {exam?.exam?.name}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                          {percentage}%
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span
+                            className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${gradeBg} ${gradeText}`}
+                          >
+                            {grade}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                          {description}
+                        </td>
+                      </tr>
+                    );
+                    })
+                }
+                {/* {studentResults.subjects.map((subject, index) => (
                   <tr key={index}>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{subject.name}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{subject.score}%</td>
@@ -85,7 +178,7 @@ function page() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{subject.status}</td>
                   </tr>
-                ))}
+                ))} */}
               </tbody>
             </table>
           </div>

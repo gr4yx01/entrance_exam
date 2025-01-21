@@ -9,6 +9,7 @@ import { unstable_serialize } from 'swr'
 import { unstable_serialize as infinite_unstable_serialize } from 'swr/infinite'
 import { parseCookies } from 'nookies'
 import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 // import { isTokenExpired } from "@/helper/auth";
 
 
@@ -38,7 +39,18 @@ const fetcher = async (url) => {
 };
 
 export default function RootLayout({ children }) {
-  const [_, __, removeCookie] = useCookies(['access_token', 'role'])
+  const [cookie, __, removeCookie] = useCookies(['access_token', 'role'])
+  const router = useRouter()
+
+  useEffect(() => {
+    if(cookie?.access_token) {
+      if(cookie?.role === 'STUDENT') {
+        router.push('/user')
+      }else if (cookie?.role === 'ADMIN') {
+        router.push('/admin')
+      }
+    }
+  }, [])
 
   // useEffect(() => {
   //   if(isTokenExpired(parseCookies().access_token)) {

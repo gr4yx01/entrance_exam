@@ -21,6 +21,13 @@ const UserNav = () => {
     setNavigation(id)
   }
 
+  const handleLogOut = () => {
+    document.cookie = "access_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;"
+    document.cookie = "role=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;"
+    router.push('/')
+  }
+
+
   return (
     <div className="h-screen bg-green-400 w-1/5 flex flex-col justify-between p-8">
       {/* Navigation Buttons */}
@@ -41,7 +48,7 @@ const UserNav = () => {
       </div>
 
       {/* Logout Button */}
-      <button className="border p-3 text-white font-semibold rounded-lg hover:bg-white hover:text-green-700 transition-all duration-200">
+      <button onClick={handleLogOut} className="border p-3 text-white font-semibold rounded-lg hover:bg-white hover:text-green-700 transition-all duration-200">
         Log out
       </button>
     </div>
